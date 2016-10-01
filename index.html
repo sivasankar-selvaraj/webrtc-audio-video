@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Record Video</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="author" type="text/html" href="https://github.com/sivasankar-selvaraj">
+    <meta name="author" content="Sivasankar Selvaraj">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script>
+    <script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
+    <style type="text/css">
+    /*
+ * Globals
+ */
+    /* Links */
+    
+    a,
+    a:focus,
+    a:hover {
+        color: #fff;
+    }
+    /* Custom default button */
+    
+    .btn-default,
+    .btn-default:hover,
+    .btn-default:focus {
+        color: #333;
+        text-shadow: none;
+        text-decoration: none;
+        background-color: #fff;
+        border: 1px solid #fff;
+        border-radius: 4px;
+    }
+    #start-recording{
+        color: #795548;
+        background-color: #FFEB3B;
+    }
+     #stop-recording{
+        color: white;
+        background-color: #F44336;
+    }
+    #save-recording{
+        color: white;
+        background-color: #E91E63;
+    }
+     #download-recording{
+        color: white;
+        background-color: #00BCD4;
+    }
+    /*
+ * Base structure
+ */
+    
+    html,
+    body {
+        height: 100%;
+        background-color: #333;
+    }
+    
+    body {
+        color: #fff;
+        text-align: center;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+    }
+    /* Extra markup and styles for table-esque vertical and horizontal centering */
+    
+    .hidden {
+        display: none;
+    }
+    
+    .site-wrapper {
+        display: table;
+        width: 100%;
+        height: 100%;
+        /* For at least Firefox */
+        min-height: 100%;
+        -webkit-box-shadow: inset 0 0 100px rgba(0, 0, 0, .5);
+        box-shadow: inset 0 0 100px rgba(0, 0, 0, .5);
+    }
+    
+    .site-wrapper-inner {
+        display: table-cell;
+        vertical-align: top;
+    }
+    
+    .cover-container {
+        margin-right: auto;
+        margin-left: auto;
+    }
+    /* Padding for spacing */
+    
+    .inner {
+        padding: 30px;
+    }
+    /*
+ * Cover
+ */
+    
+    .cover {
+        padding: 0 20px;
+    }
+    
+    .cover .btn-lg {
+        padding: 10px 20px;
+        font-weight: bold;
+    }
+    
+    .video-container {
+        position: relative;
+        padding-top: 30px;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+    
+    video {
+        width: inherit;
+        height: inherit;
+    }
+    /*
+ * Footer
+ */
+    
+    .mastfoot {
+        color: #999;
+        /* IE8 proofing */
+        color: rgba(255, 255, 255, .5);
+    }
+    /*
+ * Affix and center
+ */
+    
+    @media (min-width: 768px) {
+        .mastfoot {
+            bottom: 0;
+        }
+        /* Start the vertical centering */
+        .site-wrapper-inner {
+            vertical-align: middle;
+        }
+        /* Handle the widths */
+        .mastfoot,
+        .cover-container {
+            width: 100%;
+            /* Must be percentage or pixels for horizontal alignment */
+        }
+    }
+    
+    @media (min-width: 992px) {
+        .mastfoot,
+        .cover-container {
+            width: 700px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="site-wrapper">
+        <div class="site-wrapper-inner">
+            <div class="cover-container">
+                <div class="inner cover">
+                    <h1 class="cover-heading">Click Start Button To Record Your Video</h1>
+                    <div class="video-container">
+                        <video id="video"></video>
+                    </div>
+                    <p class="lead control-btn">
+                        <a href="#" class="btn btn-lg btn-default" id="start-recording">Start</a>
+                        <a href="#" class="btn btn-lg btn-default" id="stop-recording">Stop</a>
+                        <a href="#" class="btn btn-lg btn-default" id="save-recording">Save</a>
+                    </p>
+                </div>
+                <div class="mastfoot">
+                    <div class="inner">
+                        <p>Designed by <a target="_blank" href="https://github.com/sivasankar-selvaraj">Sivasankar Selvaraj</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+        navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+    }
+
+    var videoElement = document.getElementById('video');
+    var downloadURL = document.getElementById('download-url');
+
+    var startRecording = document.getElementById('start-recording');
+    var stopRecording = document.getElementById('stop-recording');
+    $(document).ready(function() {
+        $('#stop-recording').addClass('hidden');
+        $('#save-recording').addClass('hidden');
+        var person = prompt("Kindly enter your name to start session");
+        if (person != null) {
+            $('.cover-heading').text('Welcome '+ person+' Click Start Button To Record Your Video')
+            var fileName = person + '.webm';
+            $('.cover-heading').removeClass('hidden');
+            $('#start-recording').removeClass('hidden');
+        }
+        $('#start-recording').click(function() {
+            $('.cover-heading').addClass('hidden');
+            $('#start-recording').addClass('hidden');
+            $('#stop-recording').removeClass('hidden');
+            captureUserMedia00(function(stream) {
+                window.audioVideoRecorder = window.RecordRTC(stream, {
+                    type: 'video',
+                    video: {
+                        width: 320,
+                        height: 240
+                    },
+                });
+                window.audioVideoRecorder.startRecording();
+            });
+        });
+        $('#stop-recording').click(function() {
+            $('#stop-recording').addClass('hidden');
+            $('#save-recording').removeClass('hidden');
+            window.audioVideoRecorder.stopRecording(function(url) {
+                $('.control-btn').append('<a class="btn btn-lg btn-default" id="download-recording" href="' + url + '" download="' + fileName + '" target="_blank">Download Video</a>')
+
+                videoElement.src = url;
+                videoElement.muted = false;
+                videoElement.play();
+
+                videoElement.onended = function() {
+                    videoElement.pause();
+
+                    // dirty workaround for: "firefox seems unable to playback"
+                    videoElement.src = URL.createObjectURL(audioVideoRecorder.getBlob());
+                };
+            });
+        });
+        $('#save-recording').click(function() {
+            saveToDisk(audioVideoRecorder.getBlob(), fileName);
+        });
+    });
+
+    function captureUserMedia00(callback) {
+        captureUserMedia({
+            audio: true,
+            video: true
+        }, function(stream) {
+            videoElement.src = URL.createObjectURL(stream);
+            videoElement.muted = true;
+            videoElement.controls = true;
+            videoElement.play();
+
+            callback(stream);
+        }, function(error) {
+            alert(JSON.stringify(error));
+        });
+    }
+
+    function saveToDisk(blob, fileName) {
+        var fileType = 'video'; // or "audio"
+
+        var formData = new FormData();
+        formData.append(fileType + '-filename', fileName);
+        formData.append(fileType + '-blob', blob);
+
+        xhr('save.php', formData, function(fName) {
+            alert('Video Saved to server')
+        });
+
+        function xhr(url, data, callback) {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+                if (request.readyState == 4 && request.status == 200) {
+                    callback(location.href + request.responseText);
+                }
+            };
+            request.open('POST', url);
+            request.send(data);
+        }
+    }
+    </script>
+</body>
+
+</html>
