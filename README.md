@@ -26,9 +26,11 @@ Configuration
     </VirtualHost>
 
 4) Restart apache
+
 	sudo service apache2 restart
 
 5) Run the following cmd to create db and table
+
 	mysql -u root -p < db.sql
 
 6) Change the db configuration in config.ini file
