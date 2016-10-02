@@ -1,6 +1,6 @@
 Record video on webcam using web-rtc
 ====================================================
- Record video from web-cam and store to server and also download recorded video using web-rtc
+ Record video from web-cam and store to server and also download recorded video 
 
 Configuration
 ============
@@ -9,7 +9,8 @@ Configuration
 2) Open apache config file 
 	vi /etc/apache2/site-enabled/000-default.conf
 
-3) Change apache config file settings like this
+3) Change apache config file settings like 
+
 	<VirtualHost *:80>
 		DocumentRoot /var/www/video-capture
 			<Directory /var/www/video-capture/>
